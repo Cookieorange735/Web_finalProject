@@ -1,0 +1,6 @@
+<h2>領養寵物</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">領養</button>
+</form>

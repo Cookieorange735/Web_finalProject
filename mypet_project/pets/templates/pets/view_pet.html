@@ -1,0 +1,24 @@
+<h2>我的寵物</h2>
+{% if pet %}
+    <p>名字：{{ pet.name }}</p>
+    <p>種類：{{ pet.species }}</p>
+    <p>年齡：{{ pet.age }}</p>
+    <p>飢餓度：{{ pet.hunger }}</p>
+    <p>快樂度：{{ pet.happiness }}</p>
+    <p>清潔度：{{ pet.cleanliness }}</p>
+
+    <form method="post" action="{% url 'feed_pet' %}">
+        {% csrf_token %}
+        <button type="submit">餵食</button>
+    </form>
+    <form method="post" action="{% url 'clean_pet' %}">
+        {% csrf_token %}
+        <button type="submit">洗澡</button>
+    </form>
+    <form method="post" action="{% url 'play_with_pet' %}">
+        {% csrf_token %}
+        <button type="submit">玩耍</button>
+    </form>
+{% else %}
+    <p>你還沒有寵物，<a href="{% url 'adopt_pet' %}">現在領養</a>！</p>
+{% endif %}
