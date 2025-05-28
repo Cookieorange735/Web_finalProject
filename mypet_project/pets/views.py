@@ -58,4 +58,7 @@ def play_with_pet(request):
     pet.save()
     return redirect('view_pet')
 
-
+# def pet_status(request):
+#     pet = Pet.objects.get(owner=request.user)
+#     pet.update_status()  # 每次查詢狀態時自動更新
+#     return render(request, "pet_status.html", {"pet": pet})
