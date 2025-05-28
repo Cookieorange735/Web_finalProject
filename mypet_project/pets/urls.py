@@ -11,5 +11,5 @@ urlpatterns = [
     path('feed/', views.feed_pet, name='feed_pet'),
     path('clean/', views.clean_pet, name='clean_pet'),
     path('play/', views.play_with_pet, name='play_with_pet'),
-    path('', views.register, name='register'),
+    path('', views.register, name='home'),
 ]
