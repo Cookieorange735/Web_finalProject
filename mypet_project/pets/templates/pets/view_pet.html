@@ -1,24 +1,186 @@
-<h2>我的寵物</h2>
-{% if pet %}
-    <p>名字：{{ pet.name }}</p>
-    <p>種類：{{ pet.species }}</p>
-    <p>年齡：{{ pet.age }}</p>
-    <p>飢餓度：{{ pet.hunger }}</p>
-    <p>快樂度：{{ pet.happiness }}</p>
-    <p>清潔度：{{ pet.cleanliness }}</p>
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>我的寵物</title>
+    <style>
+        body {
+            font-family: "Microsoft JhengHei", sans-serif;
+            background-color: #fefefe;
+            color: #333;
+            text-align: center;
+            padding: 40px 20px;
+        }
 
-    <form method="post" action="{% url 'feed_pet' %}">
-        {% csrf_token %}
-        <button type="submit">餵食</button>
-    </form>
-    <form method="post" action="{% url 'clean_pet' %}">
-        {% csrf_token %}
-        <button type="submit">洗澡</button>
-    </form>
-    <form method="post" action="{% url 'play_with_pet' %}">
-        {% csrf_token %}
-        <button type="submit">玩耍</button>
-    </form>
-{% else %}
-    <p>你還沒有寵物，<a href="{% url 'adopt_pet' %}">現在領養</a>！</p>
-{% endif %}
+        h2 {
+            color: #ff7f50;
+            font-size: 2em;
+            margin-bottom: 30px;
+        }
+
+        #pet-container {
+            display: inline-block;
+            background-color: #fff8f0;
+            padding: 30px;
+            border: 2px solid #ffd1a4;
+            border-radius: 20px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+
+        #pet-image {
+            width: 256px;
+            height: auto;
+            image-rendering: pixelated;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            border: 3px solid #ffb380;
+            background-color: #fff;
+        }
+
+        .stat {
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+
+        .stat span {
+            font-weight: bold;
+            color: #ff6347;
+        }
+
+        .button-container {
+            margin-top: 25px;
+        }
+
+        button {
+            background-color: #ffa07a;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            border-radius: 8px;
+            margin: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #ff7f50;
+        }
+
+        a {
+            color: #ff6347;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h2>我的寵物</h2>
+
+    {% if pet %}
+    <div id="pet-container">
+        <img id="pet-image" src="{% static 'img/cat_Walking.gif' %}" alt="pet" />
+
+        <p class="stat">名字：<span>{{ pet.name }}</span></p>
+        <p class="stat">種類：<span>{{ pet.species }}</span></p>
+        <p class="stat">年齡：<span>{{ pet.age }}</span></p>
+        <p class="stat">飢餓度：<span id="hunger">{{ pet.hunger }}</span></p>
+        <p class="stat">快樂度：<span id="happiness">{{ pet.happiness }}</span></p>
+        <p class="stat">清潔度：<span id="cleanliness">{{ pet.cleanliness }}</span></p>
+
+        <div class="button-container">
+            <form id="feed-form" method="post" action="{% url 'feed_pet' %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit">🍖 餵食</button>
+            </form>
+            <form id="clean-form" method="post" action="{% url 'clean_pet' %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit">🛁 洗澡</button>
+            </form>
+            <form id="play-form" method="post" action="{% url 'play_with_pet' %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit">🎮 玩耍</button>
+            </form>
+        </div>
+    </div>
+    {% else %}
+        <p>你還沒有寵物，<a href="{% url 'adopt_pet' %}">現在領養</a>！</p>
+    {% endif %}
+</body>
+
+<script>
+// === 原有 JS 動畫與 AJAX 保留不變 ===
+
+const petImage = document.getElementById("pet-image");
+
+const idleAnimations = ["cat_Walking.gif", "cat_sit.gif", "Cat_Sleep.gif"];
+const actionAnimations = {
+    feed: "cat_Eating.gif",
+    clean: "cat_Washing.gif",
+    play: "cat_box_v2.gif"
+};
+
+let idleInterval = null;
+let isInAction = false;
+
+function startIdleAnimation() {
+    if (idleInterval) clearInterval(idleInterval);
+    function switchIdle() {
+        if (isInAction) return;
+        const random = idleAnimations[Math.floor(Math.random() * idleAnimations.length)];
+        petImage.src = `/static/img/${random}`;
+    }
+    switchIdle();
+    idleInterval = setInterval(switchIdle, 10000);
+}
+
+function playAction(type) {
+    isInAction = true;
+    if (idleInterval) clearInterval(idleInterval);
+    petImage.src = `/static/img/${actionAnimations[type]}`;
+    setTimeout(() => {
+        isInAction = false;
+        startIdleAnimation();
+    }, 5000);
+}
+
+startIdleAnimation();
+
+function setupActionForm(formId, actionType) {
+    const form = document.getElementById(formId);
+    form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        fetch(this.action, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}"
+            }
+        }).then(() => {
+            playAction(actionType);
+            updatePetStatus();
+        });
+    });
+}
+
+setupActionForm("feed-form", "feed");
+setupActionForm("clean-form", "clean");
+setupActionForm("play-form", "play");
+
+function updatePetStatus() {
+    fetch('/status/')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("hunger").innerText = data.hunger;
+            document.getElementById("happiness").innerText = data.happiness;
+            document.getElementById("cleanliness").innerText = data.cleanliness;
+        });
+}
+
+setInterval(updatePetStatus, 60000);
+updatePetStatus();
+</script>
+</html>
