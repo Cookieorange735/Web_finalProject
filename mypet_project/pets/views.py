@@ -32,8 +32,10 @@ def adopt_pet(request):
 
 @login_required
 def view_pet(request):
-    pet = request.user.pet
-    pet.update_status()
+    pet = getattr(request.user, 'pet', None)
+    if not pet:
+        return redirect('adopt_pet')
+    update_pet_status(pet)
     return render(request, 'pets/view_pet.html', {'pet': pet})
 
 @login_required
@@ -74,12 +76,6 @@ def update_pet_status(pet):
         pet.cleanliness = max(pet.cleanliness - minutes * 1, 0)
         pet.last_updated = now
         pet.save()
-
-@login_required
-def view_pet(request):
-    pet = request.user.pet
-    update_pet_status(pet)
-    return render(request, 'pets/view_pet.html', {'pet': pet})
 
 @login_required
 def pet_status(request):

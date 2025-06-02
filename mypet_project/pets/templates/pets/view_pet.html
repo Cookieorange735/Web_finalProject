@@ -108,7 +108,9 @@
         </div>
     </div>
     {% else %}
-        <p>你還沒有寵物，<a href="{% url 'adopt_pet' %}">現在領養</a>！</p>
+         <script>
+            window.location.href = "{% url 'adopt_pet' %}";
+        </script>
     {% endif %}
 </body>
 

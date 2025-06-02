@@ -3,9 +3,14 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 
 class Pet(models.Model):
+    SPECIES_CHOICES = [
+        ('cat', '貓'),
+
+    ]
+
     owner = models.OneToOneField(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
-    species = models.CharField(max_length=20)
+    species = models.CharField(max_length=20, choices=SPECIES_CHOICES, default='cat')
     age = models.IntegerField(default=0)
     hunger = models.IntegerField(default=50)       # 0 = 飽, 100 = 餓
     happiness = models.IntegerField(default=50)    # 0 = 難過, 100 = 快樂
