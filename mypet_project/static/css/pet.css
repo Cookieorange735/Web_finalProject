@@ -1,0 +1,53 @@
+.sprite-container {
+    width: 256px;
+    height: 384px;
+    background-image: url("{% static 'img/cat_sprite.png' %}");
+    background-repeat: no-repeat;
+    background-size: 1024px 1536px;  /* 4 frame × 4 row */
+    image-rendering: pixelated;
+    margin-bottom: 20px;
+}
+
+/* 每列狀態：idle=0, hungry=1, dirty=2, sleeping=3, playing=4 */
+.idle {
+    background-position-y: 0;
+    animation: idle-anim 1s steps(4) infinite;
+}
+.hungry {
+    background-position-y: -384px;
+    animation: hungry-anim 1s steps(4) infinite;
+}
+.dirty {
+    background-position-y: -768px;
+    animation: dirty-anim 1s steps(4) infinite;
+}
+.sleeping {
+    background-position-y: -1152px;
+    animation: sleeping-anim 1s steps(4) infinite;
+}
+.playing {
+    background-position-y: -1536px;
+    animation: playing-anim 1s steps(4) infinite;
+}
+
+/* 每個動畫從 X=0 到 X=-1024，總共 4 frame */
+@keyframes idle-anim {
+    from { background-position-x: 0; }
+    to   { background-position-x: -1024px; }
+}
+@keyframes hungry-anim {
+    from { background-position-x: 0; }
+    to   { background-position-x: -1024px; }
+}
+@keyframes dirty-anim {
+    from { background-position-x: 0; }
+    to   { background-position-x: -1024px; }
+}
+@keyframes sleeping-anim {
+    from { background-position-x: 0; }
+    to   { background-position-x: -1024px; }
+}
+@keyframes playing-anim {
+    from { background-position-x: 0; }
+    to   { background-position-x: -1024px; }
+}
